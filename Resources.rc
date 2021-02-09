@@ -1,0 +1,191 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Polish (Poland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PLK)
+LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
+#pragma code_page(1250)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Polish (Poland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOGEX 0, 0, 259, 230
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "XInput Guitar Test"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CHECKBOX        "Yeelow",IDC_YEELOW,108,36,42,24,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Green",IDC_GREEN,12,36,42,24,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Red",IDC_RED,60,36,42,24,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Blue",IDC_BLUE,156,36,42,24,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Orange",IDC_ORANGE,204,36,42,24,BS_PUSHLIKE | NOT WS_TABSTOP
+    CONTROL         "",IDC_WHAMMY,"msctls_progress32",PBS_SMOOTH | WS_BORDER,120,120,126,12
+    GROUPBOX        "Frets",IDC_STATIC,6,24,246,42
+    LTEXT           "Whammy",IDC_STATIC,120,108,30,8
+    GROUPBOX        "Strumbar",IDC_STATIC,6,72,102,60
+    CHECKBOX        "Left",IDC_LEFT,18,138,36,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Down",IDC_DOWN,18,108,78,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    CONTROL         "",IDC_TILT,"msctls_progress32",PBS_SMOOTH | WS_BORDER,120,150,126,12
+    CHECKBOX        "Up",IDC_UP,18,84,78,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Select",IDC_SELECT,186,78,60,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Start",IDC_START,120,78,60,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    CHECKBOX        "Right",IDC_RIGHT,60,138,36,18,BS_PUSHLIKE | NOT WS_TABSTOP
+    LTEXT           "Tilt",IDC_STATIC,120,138,10,8
+    LTEXT           "Slider Bar",IDC_STATIC,120,168,31,8
+    CONTROL         "",IDC_SLIDER,"msctls_progress32",PBS_SMOOTH | WS_BORDER,120,180,126,12
+    CONTROL         "Player 1",IDC_PLAYER1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,24,6,42,10
+    CONTROL         "Player 2",IDC_PLAYER2,"Button",BS_AUTORADIOBUTTON,78,6,42,10
+    CONTROL         "Player 3",IDC_PLAYER3,"Button",BS_AUTORADIOBUTTON,132,6,42,10
+    CONTROL         "Player 4",IDC_PLAYER4,"Button",BS_AUTORADIOBUTTON,186,6,42,10
+    LTEXT           "Controller not connected!",IDC_DISCONNECTED,88,210,83,8
+    LTEXT           "Type:",IDC_STATIC,12,168,20,8
+    LTEXT           "",IDC_TYPE,36,168,66,8
+    LTEXT           "Connection:",IDC_STATIC,12,180,40,8
+    LTEXT           "",IDC_CONNECTION,54,180,48,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 253
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 224
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAIN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "icon.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Spitfire_x86"
+            VALUE "FileDescription", "XInput Guitar Test"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "XinputGuitarTest.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2021"
+            VALUE "OriginalFilename", "XinputGuitarTest.exe"
+            VALUE "ProductName", "XInput Guitar Test"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
