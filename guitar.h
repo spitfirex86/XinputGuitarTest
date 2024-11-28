@@ -11,9 +11,10 @@ typedef enum tagGUITAR_BUTTON
 
 	UP_STRUM,
 	DOWN_STRUM,
+	GRAPH_LAST = DOWN_STRUM,
+
 	LEFT,
 	RIGHT,
-
 	START,
 	SELECT,
 
