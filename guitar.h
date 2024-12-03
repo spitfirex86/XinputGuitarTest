@@ -25,7 +25,13 @@ typedef struct tagBUTTON_INFO
 {
 	WORD wXButton;
 	WORD wDialogId;
+	WORD wCtlIdCounter;
+	WORD wCtlIdTimer;
+
 	HWND hControl;
-} BUTTON_INFO;
+	HWND hLabelCounter;
+	HWND hLabelTimer;
+}
+BUTTON_INFO;
 
 extern BUTTON_INFO buttons[BUTTON_COUNT];

@@ -31,6 +31,21 @@
 #define IDC_CHECK1                      1026
 #define IDC_FREEZE                      1026
 #define IDC_GRAPHTICK                   1027
+#define IDC_ORANGEMS                    1028
+#define IDC_ORANGENB                    1029
+#define IDC_BLUEMS                      1030
+#define IDC_BLUENB                      1031
+#define IDC_YEELOWMS                    1032
+#define IDC_YEELOWNB                    1033
+#define IDC_REDMS                       1034
+#define IDC_REDNB                       1035
+#define IDC_GREENMS                     1036
+#define IDC_GREENNB                     1037
+#define IDC_UPMS                        1038
+#define IDC_UPNB                        1039
+#define IDC_ORANGEMS2                   1040
+#define IDC_DOWNMS                      1040
+#define IDC_DOWNNB                      1041
 
 // Next default values for new objects
 // 
@@ -38,7 +53,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

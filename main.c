@@ -37,11 +37,13 @@ HWND hFreeze;
 char const *szGraphLabels = "GRYBOUDLRSP";
 COLORREF a_xGraphColors[GRAPH_LAST+1] = { C_GGreen, C_GRed, C_GYellow, C_GBlue, C_GOrange, C_GPurple, C_GDPurple };
 unsigned int a_ulHistoricStates[C_NumHistoric] = { 0 };
+unsigned int a_ulHistoricTimers[BUTTON_COUNT] = { 0 };
+unsigned int a_ulHistoricCounters[BUTTON_COUNT] = { 0 };
 
 unsigned int g_ulTimerId = 0;
 unsigned int g_ulTimerPeriod = 0;
 
-BOOL g_bGraphFreeze = FALSE;
+BOOL g_bGraphFreeze = TRUE;
 
 XINPUT_STATE state = { 0 };
 int playerId = 0;
@@ -65,21 +67,23 @@ void UpdateHistoric( unsigned int ulNewHistoric )
 	if ( g_bGraphFreeze && s_HistoricCounter > 32 )
 		return;
 
-	memmove(a_ulHistoricStates+1, a_ulHistoricStates, sizeof(unsigned int) * (C_NumHistoric - 1));
+	memmove(a_ulHistoricStates+1, a_ulHistoricStates, sizeof(a_ulHistoricStates[0]) * (C_NumHistoric - 1));
 	a_ulHistoricStates[0] = ulNewHistoric;
 }
 
 HDC hBackBuf = NULL;
+HBITMAP hBackBmp = NULL;
 
 void DrawGraph( HDC hdc, RECT *rc )
 {
 	if ( !hBackBuf )
+	{
 		hBackBuf = CreateCompatibleDC(hdc);
-
-	HBITMAP hBmp = CreateCompatibleBitmap(hdc, rc->right, rc->bottom);
+		hBackBmp = CreateCompatibleBitmap(hdc, rc->right, rc->bottom);
+	}
 
 	int backBufState = SaveDC(hBackBuf);
-	SelectObject(hBackBuf, hBmp);
+	SelectObject(hBackBuf, hBackBmp);
 
 	SetBkColor(hBackBuf, GetSysColor(COLOR_3DFACE));
 	SelectObject(hBackBuf, GetStockObject(DEFAULT_GUI_FONT));
@@ -145,19 +149,28 @@ void DrawGraph( HDC hdc, RECT *rc )
 		}
 	}
 
-	BitBlt(hdc, 0, 0, rc->right, rc->bottom, hBackBuf, 0, 0, SRCCOPY);
-
+	BitBlt(hdc, rc->left, rc->top, rc->right-rc->left, rc->bottom-rc->top, hBackBuf, rc->left, rc->top, SRCCOPY);
 	RestoreDC(hBackBuf, backBufState);
-	DeleteObject(hBmp);
 }
 
-void RedrawGraph( void )
+void UpdateDisplay( void )
 {
 	for ( int i = 0; i < BUTTON_COUNT; ++i )
 	{
 		BUTTON_INFO *button = &buttons[i];
 		DWORD checkValue = M_GetHistoric(g_ulTmpHistoric, i) ? BST_CHECKED : BST_UNCHECKED;
 		SendMessage(button->hControl, BM_SETCHECK, checkValue, 0);
+
+		if ( button->hLabelCounter && button->hLabelTimer )
+		{
+			char szTmp[32];
+			float buttonMs = a_ulHistoricTimers[i] * g_ulTimerPeriod * 0.001f;
+
+			sprintf_s(szTmp, sizeof(szTmp), "%u", a_ulHistoricCounters[i]);
+			SetWindowText(button->hLabelCounter, szTmp);
+			sprintf_s(szTmp, sizeof(szTmp), "%.3f", buttonMs);
+			SetWindowText(button->hLabelTimer, szTmp);
+		}
 	}
 
 	SendMessage(hWhammy, PBM_SETPOS, g_uwTmpWhammy, 0);
@@ -170,49 +183,27 @@ void RedrawGraph( void )
 
 void SetPlayer( int newPlayerId )
 {
+	static char const *a_szType[] = {
+		[XINPUT_DEVSUBTYPE_GUITAR] = "Guitar",
+		[XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE] = "Guitar (Alternate)",
+		[XINPUT_DEVSUBTYPE_GUITAR_BASS] = "Bass Guitar",
+		[XINPUT_DEVSUBTYPE_DRUM_KIT] = "Drum Kit",
+		[XINPUT_DEVSUBTYPE_GAMEPAD] = "Gamepad",
+	};
+
 	XINPUT_CAPABILITIES caps = { 0 };
-	char *szType;
-	char *szConnection;
+	char const *szType;
+	char const *szConnection;
 
 	playerId = newPlayerId;
 
 	if ( XInputGetCapabilities(playerId, 0, &caps) == ERROR_SUCCESS )
 	{
-		switch ( caps.SubType )
-		{
-		case XINPUT_DEVSUBTYPE_GUITAR:
-			szType = "Guitar";
-			break;
+		szType = (caps.SubType < ARRAYSIZE(a_szType) && a_szType[caps.SubType])
+			? a_szType[caps.SubType]
+			: "Unknown/Other";
 
-		case XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE:
-			szType = "Guitar (Alternate)";
-			break;
-
-		case XINPUT_DEVSUBTYPE_GUITAR_BASS:
-			szType = "Bass Guitar";
-			break;
-
-		case XINPUT_DEVSUBTYPE_DRUM_KIT:
-			szType = "Drum Kit";
-			break;
-
-		case XINPUT_DEVSUBTYPE_GAMEPAD:
-			szType = "Gamepad";
-			break;
-
-		default:
-			szType = "Unknown/Other";
-			break;
-		}
-
-		if ( caps.Flags & XINPUT_CAPS_WIRELESS )
-		{
-			szConnection = "Wireless";
-		}
-		else
-		{
-			szConnection = "Wired";
-		}
+		szConnection = (caps.Flags & XINPUT_CAPS_WIRELESS) ? "Wireless" : "Wired";
 
 		ShowWindow(hDisconnected, SW_HIDE);
 	}
@@ -227,14 +218,14 @@ void SetPlayer( int newPlayerId )
 		g_uwTmpTilt = 0;
 		g_uwTmpSlider = 0;
 		UpdateHistoric(0);
+		memset(a_ulHistoricCounters, 0, sizeof(a_ulHistoricCounters));
+		memset(a_ulHistoricTimers, 0, sizeof(a_ulHistoricTimers));
 
 		SendMessage(hWhammy, PBM_SETPOS, 0, 0);
 		SendMessage(hTilt, PBM_SETPOS, 0, 0);
 		SendMessage(hSlider, PBM_SETPOS, 0, 0);
 		for ( int i = 0; i < BUTTON_COUNT; i++ )
-		{
 			SendMessage(buttons[i].hControl, BM_SETCHECK, BST_UNCHECKED, 0);
-		}
 
 		ShowWindow(hDisconnected, SW_SHOW);
 	}
@@ -253,8 +244,16 @@ void ReadXInput( void )
 		for ( int i = 0; i < BUTTON_COUNT; i++ )
 		{
 			BUTTON_INFO *button = &buttons[i];
-			if ( state.Gamepad.wButtons & button->wXButton )
+			if ( state.Gamepad.wButtons & button->wXButton ) // is pressed
+			{
 				M_SetHistoric(ulHistoric, i);
+				if ( !M_GetHistoric(g_ulTmpHistoric, i) ) // was not pressed before
+				{
+					a_ulHistoricTimers[i] = 0;
+					a_ulHistoricCounters[i]++;
+				}
+				a_ulHistoricTimers[i]++;
+			}
 		}
 
 		g_uwTmpWhammy = state.Gamepad.sThumbRX + 0x8000;
@@ -277,7 +276,7 @@ void ReadXInput( void )
 void CALLBACK TimeProc( UINT uID, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2 )
 {
 	ReadXInput();
-	//RedrawGraph();
+	//UpdateDisplay();
 }
 
 void StartTimer( void )
@@ -287,7 +286,7 @@ void StartTimer( void )
 	unsigned int ms = tc.wPeriodMin;
 	//ms = 2;
 	timeBeginPeriod(ms);
-	g_ulTimerId = timeSetEvent(ms, ms, TimeProc, NULL, TIME_PERIODIC);
+	g_ulTimerId = timeSetEvent(ms, ms, TimeProc, 0, TIME_PERIODIC);
 	g_ulTimerPeriod = ms;
 
 	if ( g_ulTimerPeriod <= 2 )
@@ -332,6 +331,11 @@ BOOL CALLBACK MainDialogProc(
 		{
 			BUTTON_INFO *button = &buttons[i];
 			button->hControl = GetDlgItem(hWnd, button->wDialogId);
+			if ( button->wCtlIdCounter != 0 )
+			{
+				button->hLabelCounter = GetDlgItem(hWnd, button->wCtlIdCounter);
+				button->hLabelTimer = GetDlgItem(hWnd, button->wCtlIdTimer);
+			}
 		}
 
 		hWhammy = GetDlgItem(hWnd, IDC_WHAMMY);
@@ -346,6 +350,8 @@ BOOL CALLBACK MainDialogProc(
 		hFreeze = GetDlgItem(hWnd, IDC_FREEZE);
 		hTimerRes = GetDlgItem(hWnd, IDC_TIMERRES);
 		hGraphTick = GetDlgItem(hWnd, IDC_GRAPHTICK);
+
+		Button_SetCheck(hFreeze, g_bGraphFreeze);
 
 		SendMessage(hWhammy, PBM_SETRANGE, 0, MAKELPARAM(0, 0xFFFF));
 		SendMessage(hTilt, PBM_SETRANGE, 0, MAKELPARAM(0, 0xFFFF));
@@ -363,7 +369,7 @@ BOOL CALLBACK MainDialogProc(
 		switch ( wParam )
 		{
 		case IDT_XINPUT:
-			RedrawGraph();
+			UpdateDisplay();
 			return TRUE;
 		}
 		break;
@@ -372,19 +378,10 @@ BOOL CALLBACK MainDialogProc(
 		switch ( LOWORD(wParam) )
 		{
 		case IDC_PLAYER1:
-			SetPlayer(0);
-			return TRUE;
-
 		case IDC_PLAYER2:
-			SetPlayer(1);
-			return TRUE;
-
 		case IDC_PLAYER3:
-			SetPlayer(2);
-			return TRUE;
-
 		case IDC_PLAYER4:
-			SetPlayer(3);
+			SetPlayer(LOWORD(wParam) - IDC_PLAYER1);
 			return TRUE;
 
 		case IDC_FREEZE:
@@ -410,6 +407,7 @@ BOOL CALLBACK MainDialogProc(
 	case WM_CLOSE:
 		KillTimer(hWnd, IDT_XINPUT);
 		StopTimer();
+		DeleteObject(hBackBmp);
 		DeleteDC(hBackBuf);
 		DestroyWindow(hWnd);
 		return TRUE;
